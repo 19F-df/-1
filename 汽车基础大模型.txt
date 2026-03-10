@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>汽车营销助手</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Microsoft YaHei', sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .header { text-align: center; color: white; margin-bottom: 30px; }
+        .header h1 { font-size: 48px; margin-bottom: 10px; }
+        .header p { font-size: 18px; opacity: 0.9; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .card { background: white; border-radius: 12px; padding: 25px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: all 0.3s; cursor: pointer; }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 8px 12px rgba(0,0,0,0.2); }
+        .card-icon { font-size: 48px; margin-bottom: 15px; }
+        .card-title { font-size: 24px; color: #333; margin-bottom: 10px; }
+        .card-desc { color: #666; font-size: 14px; line-height: 1.6; }
+        .main-section { background: white; border-radius: 12px; padding: 30px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .section-title { font-size: 28px; color: #333; margin-bottom: 20px; border-bottom: 3px solid #667eea; padding-bottom: 10px; }
+        .form-group { margin-bottom: 20px; }
+        .form-label { display: block; font-size: 16px; color: #333; margin-bottom: 8px; font-weight: 500; }
+        .form-input, .form-select, .form-textarea { width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 16px; }
+        .form-input:focus, .form-select:focus, .form-textarea:focus { outline: none; border-color: #667eea; }
+        .form-textarea { min-height: 150px; resize: vertical; }
+        .btn { padding: 12px 30px; font-size: 16px; border: none; border-radius: 8px; cursor: pointer; background: #667eea; color: white; font-weight: 500; }
+        .btn:hover { background: #5568d3; transform: translateY(-2px); }
+        .result-box { margin-top: 20px; padding: 20px; background: #f5f5f5; border-radius: 8px; border-left: 4px solid #667eea; display: none; }
+        .result-title { font-size: 18px; color: #333; margin-bottom: 10px; }
+        .result-content { color: #666; line-height: 1.8; white-space: pre-wrap; }
+        .hashtag { display: inline-block; background: #e3f2fd; color: #1976d2; padding: 5px 12px; border-radius: 20px; margin-right: 8px; margin-bottom: 8px; }
+        .hidden { display: none; }
+        .customer-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        .customer-table th, .customer-table td { padding: 12px; text-align: left; border-bottom: 1px solid #e0e0e0; }
+        .customer-table th { background: #f5f5f5; font-weight: 500; }
+        .status-badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 12px; }
+        .status-high { background: #ffebee; color: #d32f2f; }
+        .status-medium { background: #fff3e0; color: #f57c00; }
+        .status-low { background: #e8f5e9; color: #388e3c; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚗 汽车营销助手</h1>
+            <p>智能文案生成 · 视频创作 · 客户管理</p>
+        </div>
+
+        <div class="grid">
+            <div class="card" onclick="showSection('content')">
+                <div class="card-icon">📝</div>
+                <div class="card-title">文案生成</div>
+                <div class="card-desc">AI智能生成汽车营销文案</div>
+            </div>
+            <div class="card" onclick="showSection('video')">
+                <div class="card-icon">🎬</div>
+                <div class="card-title">视频生成</div>
+                <div class="card-desc">将文案转换为短视频</div>
+            </div>
+            <div class="card" onclick="showSection('crm')">
+                <div class="card-icon">👥</div>
+                <div class="card-title">客户管理</div>
+                <div class="card-desc">管理客户信息和跟进</div>
+            </div>
+            <div class="card" onclick="showSection('schedule')">
+                <div class="card-icon">📅</div>
+                <div class="card-title">内容排期</div>
+                <div class="card-desc">定时发布内容</div>
+            </div>
+        </div>
+
+        <!-- 文案生成区域 -->
+        <div id="content-section" class="main-section hidden">
+            <h2 class="section-title">📝 文案生成</h2>
+            <div class="form-group">
+                <label class="form-label">车型</label>
+                <input type="text" class="form-input" id="carModel" value="比亚迪汉">
+            </div>
+            <div class="form-group">
+                <label class="form-label">文案类型</label>
+                <select class="form-select" id="contentType">
+                    <option value="marketing">📢 营销推广</option>
+                    <option value="promotion">🎉 促销活动</option>
+                    <option value="qa">❓ 问答科普</option>
+                    <option value="review">📝 车主体验</option>
+                    <option value="hot_topic">🔥 热点话题</option>
+                </select>
+            </div>
+            <button class="btn" onclick="generateContent()">✨ 生成文案</button>
+            
+            <div id="contentResult" class="result-box">
+                <div class="result-title">✅ 生成结果</div>
+                <div class="result-content" id="contentText"></div>
+                <div id="hashtags"></div>
+            </div>
+        </div>
+
+        <!-- 客户管理区域 -->
+        <div id="crm-section" class="main-section hidden">
+            <h2 class="section-title">👥 客户管理</h2>
+            <div class="form-group">
+                <label class="form-label">客户姓名</label>
+                <input type="text" class="form-input" id="customerName" placeholder="客户姓名">
+            </div>
+            <div class="form-group">
+                <label class="form-label">联系电话</label>
+                <input type="text" class="form-input" id="customerPhone" placeholder="13800138000">
+            </div>
+            <div class="form-group">
+                <label class="form-label">意向车型</label>
+                <input type="text" class="form-input" id="interestedModel" placeholder="例如: 比亚迪汉">
+            </div>
+            <div class="form-group">
+                <label class="form-label">意向等级</label>
+                <select class="form-select" id="intentLevel">
+                    <option value="high">🔥 高意向(想买)</option>
+                    <option value="medium">⚡ 中意向(了解)</option>
+                    <option value="low">💡 低意向(关注)</option>
+                </select>
+            </div>
+            <button class="btn" onclick="addCustomer()">➕ 添加客户</button>
+            
+            <div id="customerResult" class="result-box">
+                <div class="result-title">✅ 客户列表</div>
+                <table class="customer-table">
+                    <thead>
+                        <tr>
+                            <th>姓名</th>
+                            <th>电话</th>
+                            <th>意向车型</th>
+                            <th>意向等级</th>
+                        </tr>
+                    </thead>
+                    <tbody id="customerList"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 视频生成区域 -->
+        <div id="video-section" class="main-section hidden">
+            <h2 class="section-title">🎬 视频生成</h2>
+            <div class="form-group">
+                <label class="form-label">文案内容</label>
+                <textarea class="form-textarea" id="videoScript" placeholder="输入文案..."></textarea>
+            </div>
+            <button class="btn" onclick="generateVideo()">🎬 生成视频</button>
+            
+            <div id="videoResult" class="result-box">
+                <div class="result-title">✅ 视频生成</div>
+                <div class="result-content" id="videoText"></div>
+            </div>
+        </div>
+
+        <!-- 内容排期区域 -->
+        <div id="schedule-section" class="main-section hidden">
+            <h2 class="section-title">📅 内容排期</h2>
+            <div class="form-group">
+                <label class="form-label">发布内容</label>
+                <textarea class="form-textarea" id="scheduleContent" placeholder="要发布的内容..."></textarea>
+            </div>
+            <div class="form-group">
+                <label class="form-label">发布时间</label>
+                <input type="datetime-local" class="form-input" id="scheduleTime">
+            </div>
+            <button class="btn" onclick="addSchedule()">➕ 添加排期</button>
+            
+            <div id="scheduleResult" class="result-box">
+                <div class="result-title">✅ 排期列表</div>
+                <div class="result-content" id="scheduleList"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let customers = [];
+        let schedules = [];
+
+        const contentTemplates = {
+            marketing: "这辆{model}真的太帅了！😱 外观超吸睛,开出去回头率绝对爆表！内饰科技感满满,大屏幕超清晰。动力也够劲,起步轻快,超车毫无压力。关键是性价比超高,20万以内就能拿下！想知道具体配置吗？评论区问我👇",
+            promotion: "{model}限时特惠！💰 直降3万！仅限本周！前50名订车再送终身保养！名额有限,先到先得！感兴趣的赶紧私信我咨询📱",
+            qa: "很多人问{model}油耗怎么样？今天实测一下！市区走走停停,百公里才7个油！高速更省,不到6个！这个级别真的很省了。大家还想了解什么？评论区告诉我！",
+            review: "提{model}一个月了,说说真实感受。优点:空间够大,一家四口够用；辅助驾驶好用,高速很轻松。缺点:隔音一般,胎噪有点大。总体很满意,20万这个价位很值！你们觉得呢？",
+            hot_topic: "继小米汽车之后,国产车又出爆款了！{model}这次真的杀疯了！外观内饰全面升级,关键价格还降了！国产车真的支棱起来了！"
+        };
+
+        const hashtags = {
+            marketing: ['#汽车推荐', '#买车攻略', '#新车上市', '#试驾体验'],
+            promotion: ['#汽车优惠', '#购车福利', '#限时特惠'],
+            qa: ['#汽车问答', '#用车小知识', '#实测'],
+            review: ['#真实车主', '#用车感受', '#测评'],
+            hot_topic: ['#汽车热点', '#热门', '#国产汽车']
+        };
+
+        function showSection(section) {
+            document.querySelectorAll('.main-section').forEach(el => el.classList.add('hidden'));
+            document.getElementById(section + '-section').classList.remove('hidden');
+        }
+
+        function generateContent() {
+            const carModel = document.getElementById('carModel').value || '比亚迪汉';
+            const contentType = document.getElementById('contentType').value;
+            
+            let content = contentTemplates[contentType].replace(/{model}/g, carModel);
+            const tagList = hashtags[contentType];
+            const tagHtml = tagList.map(tag => `<span class="hashtag">${tag}</span>`).join('');
+            
+            document.getElementById('contentResult').style.display = 'block';
+            document.getElementById('contentText').textContent = content;
+            document.getElementById('hashtags').innerHTML = tagHtml;
+        }
+
+        function addCustomer() {
+            const name = document.getElementById('customerName').value;
+            const phone = document.getElementById('customerPhone').value;
+            const model = document.getElementById('interestedModel').value || '未指定';
+            const intent = document.getElementById('intentLevel').value;
+            
+            if (!name || !phone) {
+                alert('请填写姓名和电话');
+                return;
+            }
+            
+            customers.push({ name, phone, model, intent });
+            updateCustomerList();
+            alert('客户添加成功！');
+            
+            document.getElementById('customerName').value = '';
+            document.getElementById('customerPhone').value = '';
+            document.getElementById('interestedModel').value = '';
+        }
+
+        function updateCustomerList() {
+            const tbody = document.getElementById('customerList');
+            tbody.innerHTML = customers.map(c => {
+                const intentText = c.intent === 'high' ? '高意向' : c.intent === 'medium' ? '中意向' : '低意向';
+                const intentClass = 'status-' + c.intent;
+                return `<tr>
+                    <td>${c.name}</td>
+                    <td>${c.phone}</td>
+                    <td>${c.model}</td>
+                    <td><span class="status-badge ${intentClass}">${intentText}</span></td>
+                </tr>`;
+            }).join('');
+            
+            document.getElementById('customerResult').style.display = 'block';
+        }
+
+        function generateVideo() {
+            const script = document.getElementById('videoScript').value;
+            if (!script) {
+                alert('请输入文案内容');
+                return;
+            }
+            document.getElementById('videoResult').style.display = 'block';
+            document.getElementById('videoText').textContent = '✨ 视频生成功能\n\n文案: ' + script + '\n\n(演示版本,完整版可集成AI视频API)';
+        }
+
+        function addSchedule() {
+            const content = document.getElementById('scheduleContent').value;
+            const time = document.getElementById('scheduleTime').value;
+            
+            if (!content || !time) {
+                alert('请填写内容和发布时间');
+                return;
+            }
+            
+            schedules.push({ content, time });
+            updateScheduleList();
+            alert('排期添加成功！');
+        }
+
+        function updateScheduleList() {
+            const listDiv = document.getElementById('scheduleList');
+            listDiv.innerHTML = schedules.map((s, i) => `
+                <div style="padding: 10px; margin-bottom: 10px; background: #f5f5f5; border-radius: 8px;">
+                    <strong>排期 ${i + 1}</strong><br>
+                    ⏰ 时间: ${s.time}<br>
+                    📝 内容: ${s.content.substring(0, 50)}...
+                </div>
+            `).join('');
+            
+            document.getElementById('scheduleResult').style.display = 'block';
+        }
+    </script>
+</body>
